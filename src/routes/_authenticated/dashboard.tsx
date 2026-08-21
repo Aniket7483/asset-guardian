@@ -142,9 +142,7 @@ function DashboardPage() {
   }, [rows]);
 
   const recent = rows.slice(0, 6);
-  const upcomingService = (maintenance.data ?? [])
-    .filter((m) => m.next_service_date)
-    .slice(0, 5);
+  const openService = (maintenance.data ?? []).filter((m) => m.status !== "Completed").slice(0, 5);
 
   return (
     <div>
@@ -271,7 +269,7 @@ function DashboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            {stats.expiring.length === 0 && upcomingService.length === 0 ? (
+            {stats.expiring.length === 0 && openService.length === 0 ? (
               <p className="py-6 text-center text-sm text-muted-foreground">
                 Nothing needs attention right now.
               </p>
@@ -282,9 +280,9 @@ function DashboardPage() {
                 {formatDate(a.warranty_end)}
               </div>
             ))}
-            {upcomingService.map((m) => (
+            {openService.map((m) => (
               <div key={m.id} className="rounded-lg border p-3 text-sm">
-                Next service due {formatDate(m.next_service_date)} — {m.description ?? "Scheduled service"}
+                Open maintenance since {formatDate(m.maintenance_date)} — {m.problem ?? m.description ?? "Service request"}
               </div>
             ))}
           </CardContent>
