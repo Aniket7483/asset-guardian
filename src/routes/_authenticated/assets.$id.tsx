@@ -231,12 +231,12 @@ function AssetDetail() {
                     assetMaintenance.map((m) => (
                       <div key={m.id} className="rounded-lg border p-3 text-sm">
                         <div className="flex justify-between gap-3">
-                          <span className="font-semibold">{dash(m.maintenance_type)}</span>
+                          <span className="font-semibold">{dash(m.problem)}</span>
                           <span>{formatCurrency(m.cost)}</span>
                         </div>
                         <p className="text-muted-foreground">{dash(m.description)}</p>
                         <p className="text-xs text-muted-foreground">
-                          {formatDate(m.maintenance_date)} · {dash(m.vendor)}
+                          {formatDate(m.maintenance_date)} · {dash(m.service_provider)}
                         </p>
                       </div>
                     ))
@@ -254,7 +254,7 @@ function AssetDetail() {
                     assetIncidents.map((i) => (
                       <div key={i.id} className="rounded-lg border p-3 text-sm">
                         <p className="flex items-center gap-2 font-semibold">
-                          <AlertTriangle className="h-4 w-4 text-destructive" /> {i.incident_type}
+                          <AlertTriangle className="h-4 w-4 text-destructive" /> {i.type}
                         </p>
                         <p className="text-muted-foreground">{dash(i.description)}</p>
                         <p className="text-xs text-muted-foreground">
