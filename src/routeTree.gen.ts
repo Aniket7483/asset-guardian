@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedEmployeesRouteImport } from './routes/_authenticated/employees'
+import { Route as AuthenticatedLocationsRouteImport } from './routes/_authenticated/locations'
 import { Route as AuthenticatedAssetsIndexRouteImport } from './routes/_authenticated/assets.index'
 import { Route as AuthenticatedAssetsIdRouteImport } from './routes/_authenticated/assets.$id'
 
@@ -41,6 +42,11 @@ const AuthenticatedEmployeesRoute = AuthenticatedEmployeesRouteImport.update({
   path: '/employees',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLocationsRoute = AuthenticatedLocationsRouteImport.update({
+  id: '/locations',
+  path: '/locations',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedAssetsIndexRoute =
   AuthenticatedAssetsIndexRouteImport.update({
     id: '/assets/',
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/employees': typeof AuthenticatedEmployeesRoute
+  '/locations': typeof AuthenticatedLocationsRoute
   '/assets/$id': typeof AuthenticatedAssetsIdRoute
   '/assets/': typeof AuthenticatedAssetsIndexRoute
 }
@@ -66,6 +73,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/employees': typeof AuthenticatedEmployeesRoute
+  '/locations': typeof AuthenticatedLocationsRoute
   '/assets/$id': typeof AuthenticatedAssetsIdRoute
   '/assets': typeof AuthenticatedAssetsIndexRoute
 }
@@ -76,15 +84,29 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/employees': typeof AuthenticatedEmployeesRoute
+  '/_authenticated/locations': typeof AuthenticatedLocationsRoute
   '/_authenticated/assets/$id': typeof AuthenticatedAssetsIdRoute
   '/_authenticated/assets/': typeof AuthenticatedAssetsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/auth' | '/dashboard' | '/employees' | '/assets/$id' | '/assets/'
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/employees'
+    | '/locations'
+    | '/assets/$id'
+    | '/assets/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/employees' | '/assets/$id' | '/assets'
+  to:
+    | '/'
+    | '/auth'
+    | '/dashboard'
+    | '/employees'
+    | '/locations'
+    | '/assets/$id'
+    | '/assets'
   id:
     | '__root__'
     | '/'
@@ -92,6 +114,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/_authenticated/dashboard'
     | '/_authenticated/employees'
+    | '/_authenticated/locations'
     | '/_authenticated/assets/$id'
     | '/_authenticated/assets/'
   fileRoutesById: FileRoutesById
@@ -139,6 +162,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedEmployeesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/locations': {
+      id: '/_authenticated/locations'
+      path: '/locations'
+      fullPath: '/locations'
+      preLoaderRoute: typeof AuthenticatedLocationsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/assets/': {
       id: '/_authenticated/assets/'
       path: '/assets'
@@ -159,6 +189,7 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEmployeesRoute: typeof AuthenticatedEmployeesRoute
+  AuthenticatedLocationsRoute: typeof AuthenticatedLocationsRoute
   AuthenticatedAssetsIdRoute: typeof AuthenticatedAssetsIdRoute
   AuthenticatedAssetsIndexRoute: typeof AuthenticatedAssetsIndexRoute
 }
@@ -166,6 +197,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEmployeesRoute: AuthenticatedEmployeesRoute,
+  AuthenticatedLocationsRoute: AuthenticatedLocationsRoute,
   AuthenticatedAssetsIdRoute: AuthenticatedAssetsIdRoute,
   AuthenticatedAssetsIndexRoute: AuthenticatedAssetsIndexRoute,
 }
