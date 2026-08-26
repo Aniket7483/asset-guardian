@@ -18,6 +18,7 @@ import { Route as AuthenticatedEmployeesRouteImport } from './routes/_authentica
 import { Route as AuthenticatedLocationsRouteImport } from './routes/_authenticated/locations'
 import { Route as AuthenticatedMaintenanceRouteImport } from './routes/_authenticated/maintenance'
 import { Route as AuthenticatedScanRouteImport } from './routes/_authenticated/scan'
+import { Route as AuthenticatedVerificationRouteImport } from './routes/_authenticated/verification'
 import { Route as AuthenticatedAssetsIndexRouteImport } from './routes/_authenticated/assets.index'
 import { Route as AuthenticatedAssetsIdRouteImport } from './routes/_authenticated/assets.$id'
 
@@ -67,6 +68,12 @@ const AuthenticatedScanRoute = AuthenticatedScanRouteImport.update({
   path: '/scan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedVerificationRoute =
+  AuthenticatedVerificationRouteImport.update({
+    id: '/verification',
+    path: '/verification',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAssetsIndexRoute =
   AuthenticatedAssetsIndexRouteImport.update({
     id: '/assets/',
@@ -88,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/locations': typeof AuthenticatedLocationsRoute
   '/maintenance': typeof AuthenticatedMaintenanceRoute
   '/scan': typeof AuthenticatedScanRoute
+  '/verification': typeof AuthenticatedVerificationRoute
   '/assets/$id': typeof AuthenticatedAssetsIdRoute
   '/assets/': typeof AuthenticatedAssetsIndexRoute
 }
@@ -100,6 +108,7 @@ export interface FileRoutesByTo {
   '/locations': typeof AuthenticatedLocationsRoute
   '/maintenance': typeof AuthenticatedMaintenanceRoute
   '/scan': typeof AuthenticatedScanRoute
+  '/verification': typeof AuthenticatedVerificationRoute
   '/assets/$id': typeof AuthenticatedAssetsIdRoute
   '/assets': typeof AuthenticatedAssetsIndexRoute
 }
@@ -114,6 +123,7 @@ export interface FileRoutesById {
   '/_authenticated/locations': typeof AuthenticatedLocationsRoute
   '/_authenticated/maintenance': typeof AuthenticatedMaintenanceRoute
   '/_authenticated/scan': typeof AuthenticatedScanRoute
+  '/_authenticated/verification': typeof AuthenticatedVerificationRoute
   '/_authenticated/assets/$id': typeof AuthenticatedAssetsIdRoute
   '/_authenticated/assets/': typeof AuthenticatedAssetsIndexRoute
 }
@@ -128,6 +138,7 @@ export interface FileRouteTypes {
     | '/locations'
     | '/maintenance'
     | '/scan'
+    | '/verification'
     | '/assets/$id'
     | '/assets/'
   fileRoutesByTo: FileRoutesByTo
@@ -140,6 +151,7 @@ export interface FileRouteTypes {
     | '/locations'
     | '/maintenance'
     | '/scan'
+    | '/verification'
     | '/assets/$id'
     | '/assets'
   id:
@@ -153,6 +165,7 @@ export interface FileRouteTypes {
     | '/_authenticated/locations'
     | '/_authenticated/maintenance'
     | '/_authenticated/scan'
+    | '/_authenticated/verification'
     | '/_authenticated/assets/$id'
     | '/_authenticated/assets/'
   fileRoutesById: FileRoutesById
@@ -228,6 +241,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedScanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/verification': {
+      id: '/_authenticated/verification'
+      path: '/verification'
+      fullPath: '/verification'
+      preLoaderRoute: typeof AuthenticatedVerificationRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/assets/': {
       id: '/_authenticated/assets/'
       path: '/assets'
@@ -252,6 +272,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedLocationsRoute: typeof AuthenticatedLocationsRoute
   AuthenticatedMaintenanceRoute: typeof AuthenticatedMaintenanceRoute
   AuthenticatedScanRoute: typeof AuthenticatedScanRoute
+  AuthenticatedVerificationRoute: typeof AuthenticatedVerificationRoute
   AuthenticatedAssetsIdRoute: typeof AuthenticatedAssetsIdRoute
   AuthenticatedAssetsIndexRoute: typeof AuthenticatedAssetsIndexRoute
 }
@@ -263,6 +284,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedLocationsRoute: AuthenticatedLocationsRoute,
   AuthenticatedMaintenanceRoute: AuthenticatedMaintenanceRoute,
   AuthenticatedScanRoute: AuthenticatedScanRoute,
+  AuthenticatedVerificationRoute: AuthenticatedVerificationRoute,
   AuthenticatedAssetsIdRoute: AuthenticatedAssetsIdRoute,
   AuthenticatedAssetsIndexRoute: AuthenticatedAssetsIndexRoute,
 }
