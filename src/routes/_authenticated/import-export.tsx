@@ -119,7 +119,7 @@ function ImportExportPage() {
         specific_location: str(r["Specific Location"]),
         assigned_employee_id: employeeId,
         description: str(r["Description"]),
-      });
+      } as never);
       if (error) errors.push(`Row ${i + 2}: ${error.message}`);
       else ok += 1;
     }
