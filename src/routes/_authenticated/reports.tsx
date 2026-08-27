@@ -175,7 +175,7 @@ function ReportsPage() {
   }, [list, buildings.data]);
 
   const totalValue = list.reduce((s, a) => s + Number(a.purchase_price ?? 0), 0);
-  const headers = rows.length ? Object.keys(rows[0]) : [];
+  const headers = rows.length ? Object.keys(rows[0] ?? {}) : [];
 
   return (
     <div>

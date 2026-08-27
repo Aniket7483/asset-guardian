@@ -27,9 +27,7 @@ import {
 import type { Asset } from "@/lib/types";
 import { NativeSelect } from "./NativeSelect";
 
-type FormState = Record<string, string>;
-
-const EMPTY: FormState = {
+const EMPTY = {
   name: "",
   category_id: "",
   asset_type: "",
@@ -58,11 +56,14 @@ const EMPTY: FormState = {
   expected_return_date: "",
 };
 
+type FormState = typeof EMPTY;
+
 function toState(asset: Asset): FormState {
   const s: FormState = { ...EMPTY };
+  const writable = s as unknown as Record<string, string>;
   for (const key of Object.keys(EMPTY)) {
     const v = (asset as unknown as Record<string, unknown>)[key];
-    s[key] = v === null || v === undefined ? "" : String(v);
+    writable[key] = v === null || v === undefined ? "" : String(v);
   }
   return s;
 }
@@ -90,10 +91,10 @@ export function AssetForm({
   const { create, update } = useCrud("assets");
 
   useEffect(() => {
-    if (open) setForm(asset ? toState(asset) : { ...EMPTY, ...defaults });
+    if (open) setForm(asset ? toState(asset) : ({ ...EMPTY, ...(defaults ?? {}) } as FormState));
   }, [open, asset, defaults]);
 
-  const set = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
+  const set = (k: keyof FormState, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
   const floorOptions = useMemo(
     () => (floors.data ?? []).filter((f) => !form.building_id || f.building_id === form.building_id),

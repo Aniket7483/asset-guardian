@@ -119,7 +119,7 @@ function ImportExportPage() {
         specific_location: str(r["Specific Location"]),
         assigned_employee_id: employeeId,
         description: str(r["Description"]),
-      });
+      } as never);
       if (error) errors.push(`Row ${i + 2}: ${error.message}`);
       else ok += 1;
     }
@@ -216,7 +216,7 @@ function ImportExportPage() {
                 <table className="w-full text-xs">
                   <thead className="bg-muted/50 text-left">
                     <tr>
-                      {Object.keys(preview[0]).slice(0, 6).map((h) => (
+                      {Object.keys(preview[0] ?? {}).slice(0, 6).map((h) => (
                         <th key={h} className="whitespace-nowrap px-3 py-2">
                           {h}
                         </th>
@@ -226,7 +226,7 @@ function ImportExportPage() {
                   <tbody>
                     {preview.slice(0, 25).map((r, i) => (
                       <tr key={i} className="border-t">
-                        {Object.keys(preview[0]).slice(0, 6).map((h) => (
+                        {Object.keys(preview[0] ?? {}).slice(0, 6).map((h) => (
                           <td key={h} className="whitespace-nowrap px-3 py-1.5">
                             {String(r[h] ?? "")}
                           </td>

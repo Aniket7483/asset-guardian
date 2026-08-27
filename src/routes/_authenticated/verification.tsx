@@ -96,7 +96,7 @@ function VerificationPage() {
       })
       .select()
       .single();
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setName("");
     setActiveId((data as Verification).id);
     qc.invalidateQueries({ queryKey: ["verifications"] });
@@ -105,14 +105,14 @@ function VerificationPage() {
 
   const recordScan = async (text: string) => {
     const id = parseScan(text);
-    if (!id || !activeId) return toast.error("Unrecognised code");
-    if (scannedIds.has(id)) return toast.info("Already verified in this session");
+    if (!id || !activeId) { toast.error("Unrecognised code"); return; }
+    if (scannedIds.has(id)) { toast.info("Already verified in this session"); return; }
     const asset = (assets.data ?? []).find((a) => a.id === id);
-    if (!asset) return toast.error("Asset not found");
+    if (!asset) { toast.error("Asset not found"); return; }
     const { error } = await supabase
       .from("verification_items")
       .insert({ verification_id: activeId, asset_id: id, result: "Verified" });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     await logHistory(id, "Verified", `Physical verification: ${active?.name ?? "session"}`);
     qc.invalidateQueries({ queryKey: ["verification_items", activeId] });
     toast.success(`Verified ${asset.asset_code} — ${asset.name}`);
@@ -130,7 +130,7 @@ function VerificationPage() {
       .from("verifications")
       .update({ status: "Completed", completed_at: new Date().toISOString() })
       .eq("id", activeId);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries();
     toast.success(`Session closed — ${missing.length} asset(s) marked missing`);
     setActiveId(null);

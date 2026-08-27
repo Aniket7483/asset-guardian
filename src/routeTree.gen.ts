@@ -20,6 +20,7 @@ import { Route as AuthenticatedLocationsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedMaintenanceRouteImport } from './routes/_authenticated/maintenance'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedScanRouteImport } from './routes/_authenticated/scan'
+import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticated/settings'
 import { Route as AuthenticatedVerificationRouteImport } from './routes/_authenticated/verification'
 import { Route as AuthenticatedAssetsIndexRouteImport } from './routes/_authenticated/assets.index'
 import { Route as AuthenticatedAssetsIdRouteImport } from './routes/_authenticated/assets.$id'
@@ -81,6 +82,11 @@ const AuthenticatedScanRoute = AuthenticatedScanRouteImport.update({
   path: '/scan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedSettingsRoute = AuthenticatedSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedVerificationRoute =
   AuthenticatedVerificationRouteImport.update({
     id: '/verification',
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/maintenance': typeof AuthenticatedMaintenanceRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/scan': typeof AuthenticatedScanRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/verification': typeof AuthenticatedVerificationRoute
   '/assets/$id': typeof AuthenticatedAssetsIdRoute
   '/assets/': typeof AuthenticatedAssetsIndexRoute
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/maintenance': typeof AuthenticatedMaintenanceRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/scan': typeof AuthenticatedScanRoute
+  '/settings': typeof AuthenticatedSettingsRoute
   '/verification': typeof AuthenticatedVerificationRoute
   '/assets/$id': typeof AuthenticatedAssetsIdRoute
   '/assets': typeof AuthenticatedAssetsIndexRoute
@@ -142,6 +150,7 @@ export interface FileRoutesById {
   '/_authenticated/maintenance': typeof AuthenticatedMaintenanceRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/scan': typeof AuthenticatedScanRoute
+  '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/verification': typeof AuthenticatedVerificationRoute
   '/_authenticated/assets/$id': typeof AuthenticatedAssetsIdRoute
   '/_authenticated/assets/': typeof AuthenticatedAssetsIndexRoute
@@ -159,6 +168,7 @@ export interface FileRouteTypes {
     | '/maintenance'
     | '/reports'
     | '/scan'
+    | '/settings'
     | '/verification'
     | '/assets/$id'
     | '/assets/'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/maintenance'
     | '/reports'
     | '/scan'
+    | '/settings'
     | '/verification'
     | '/assets/$id'
     | '/assets'
@@ -190,6 +201,7 @@ export interface FileRouteTypes {
     | '/_authenticated/maintenance'
     | '/_authenticated/reports'
     | '/_authenticated/scan'
+    | '/_authenticated/settings'
     | '/_authenticated/verification'
     | '/_authenticated/assets/$id'
     | '/_authenticated/assets/'
@@ -280,6 +292,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedScanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/settings': {
+      id: '/_authenticated/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof AuthenticatedSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/verification': {
       id: '/_authenticated/verification'
       path: '/verification'
@@ -313,6 +332,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedMaintenanceRoute: typeof AuthenticatedMaintenanceRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedScanRoute: typeof AuthenticatedScanRoute
+  AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedVerificationRoute: typeof AuthenticatedVerificationRoute
   AuthenticatedAssetsIdRoute: typeof AuthenticatedAssetsIdRoute
   AuthenticatedAssetsIndexRoute: typeof AuthenticatedAssetsIndexRoute
@@ -327,6 +347,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedMaintenanceRoute: AuthenticatedMaintenanceRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedScanRoute: AuthenticatedScanRoute,
+  AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedVerificationRoute: AuthenticatedVerificationRoute,
   AuthenticatedAssetsIdRoute: AuthenticatedAssetsIdRoute,
   AuthenticatedAssetsIndexRoute: AuthenticatedAssetsIndexRoute,

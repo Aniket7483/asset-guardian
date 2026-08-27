@@ -108,8 +108,8 @@ export function AssignDialog({
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const target = asset ?? (assets.data ?? []).find((a) => a.id === assetId);
-    if (!target) return toast.error("Select an asset");
-    if (!employeeId) return toast.error("Select an employee");
+    if (!target) { toast.error("Select an asset"); return; }
+    if (!employeeId) { toast.error("Select an employee"); return; }
     setSaving(true);
     try {
       const emp = (employees.data ?? []).find((x) => x.id === employeeId);
@@ -119,7 +119,7 @@ export function AssignDialog({
         date,
         expectedReturn: expected,
         notes,
-        employeeName: emp?.name,
+        ...(emp?.name ? { employeeName: emp.name } : {}),
       });
       refresh();
       toast.success(`${target.asset_code} assigned to ${emp?.name}`);
