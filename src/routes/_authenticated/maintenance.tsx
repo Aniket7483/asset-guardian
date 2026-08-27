@@ -101,7 +101,7 @@ function MaintenancePage() {
   );
 
   const submitMaintenance = () => {
-    if (!m.asset_id || !m.problem.trim()) return toast.error("Pick an asset and describe the problem");
+    if (!m.asset_id || !m.problem.trim()) { toast.error("Pick an asset and describe the problem"); return; }
     maintCrud.create.mutate(
       {
         asset_id: m.asset_id,
@@ -129,7 +129,7 @@ function MaintenancePage() {
   };
 
   const submitIncident = () => {
-    if (!i.asset_id) return toast.error("Pick an asset");
+    if (!i.asset_id) { toast.error("Pick an asset"); return; }
     incidentCrud.create.mutate(
       {
         asset_id: i.asset_id,

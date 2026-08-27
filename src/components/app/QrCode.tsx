@@ -98,7 +98,7 @@ export function AssetQrPanel({
         <Button
           size="sm"
           variant="outline"
-          onClick={() => printLabel({ dataUrl, code, name, extra })}
+          onClick={() => printLabel({ dataUrl, code, name, ...(extra ? { extra } : {}) })}
         >
           <Printer className="mr-1.5 h-4 w-4" /> Print label
         </Button>

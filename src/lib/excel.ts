@@ -28,7 +28,9 @@ function triggerDownload(blob: Blob, name: string) {
 export async function parseSpreadsheet(file: File): Promise<Row[]> {
   const buf = await file.arrayBuffer();
   const wb = XLSX.read(buf, { type: "array" });
-  const ws = wb.Sheets[wb.SheetNames[0]];
+  const first = wb.SheetNames[0];
+  const ws = first ? wb.Sheets[first] : undefined;
+  if (!ws) return [];
   return XLSX.utils.sheet_to_json<Row>(ws, { defval: "" });
 }
 

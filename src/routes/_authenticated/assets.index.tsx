@@ -67,7 +67,7 @@ export const Route = createFileRoute("/_authenticated/assets/")({
 });
 
 function AssetsPage() {
-  const navigate = useNavigate({ from: "/assets" });
+  const navigate = useNavigate();
   const { q, status, category, building } = Route.useSearch();
   const assets = useAssets();
   const categories = useCategories();
@@ -85,7 +85,7 @@ function AssetsPage() {
   const [scanOpen, setScanOpen] = useState(false);
 
   const setSearch = (patch: Record<string, string>) =>
-    navigate({ search: (prev) => ({ ...prev, ...patch }) });
+    navigate({ to: "/assets", search: ((prev: Record<string, unknown>) => ({ ...prev, ...patch })) as never });
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -332,7 +332,7 @@ function AssetsPage() {
           <Scanner
             onResult={(text) => {
               const id = parseScan(text);
-              if (!id) return toast.error("Unrecognised code");
+              if (!id) { toast.error("Unrecognised code"); return; }
               setScanOpen(false);
               navigate({ to: "/assets/$id", params: { id } });
             }}
