@@ -91,17 +91,34 @@ export function AssetForm({
   const { create, update } = useCrud("assets");
 
   useEffect(() => {
-    if (open) setForm(asset ? toState(asset) : ({ ...EMPTY, ...(defaults ?? {}) } as FormState));
-  }, [open, asset, defaults]);
+    if (!open) return;
+    if (asset) {
+      setForm(toState(asset));
+      return;
+    }
+    // Pre-fill the location from the currently selected scope.
+    setForm({
+      ...EMPTY,
+      building_id: scope.buildingId,
+      floor_id: scope.floorId,
+      room_id: scope.roomId,
+      ...(defaults ?? {}),
+    } as FormState);
+  }, [open, asset, defaults, scope.buildingId, scope.floorId, scope.roomId]);
 
   const set = (k: keyof FormState, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
+  // Only valid Center → Building → Floor → Room combinations are selectable.
+  const buildingOptions = useMemo(
+    () => (buildings.data ?? []).filter((b) => !scope.centerId || b.center_id === scope.centerId),
+    [buildings.data, scope.centerId],
+  );
   const floorOptions = useMemo(
-    () => (floors.data ?? []).filter((f) => !form.building_id || f.building_id === form.building_id),
+    () => (form.building_id ? (floors.data ?? []).filter((f) => f.building_id === form.building_id) : []),
     [floors.data, form.building_id],
   );
   const roomOptions = useMemo(
-    () => (rooms.data ?? []).filter((r) => !form.floor_id || r.floor_id === form.floor_id),
+    () => (form.floor_id ? (rooms.data ?? []).filter((r) => r.floor_id === form.floor_id) : []),
     [rooms.data, form.floor_id],
   );
 
