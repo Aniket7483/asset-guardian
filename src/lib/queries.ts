@@ -8,6 +8,7 @@ import type {
   Assignment,
   Building,
   Category,
+  Center,
   Employee,
   Floor,
   Incident,
@@ -26,6 +27,7 @@ async function selectAll<R>(table: string, order = "created_at", asc = true): Pr
 
 export const qk = {
   assets: ["assets"] as const,
+  centers: ["centers"] as const,
   categories: ["categories"] as const,
   statuses: ["asset_statuses"] as const,
   conditions: ["asset_conditions"] as const,
@@ -60,6 +62,9 @@ export function useConditions() {
     queryKey: qk.conditions,
     queryFn: () => selectAll<AssetCondition>("asset_conditions", "sort_order"),
   });
+}
+export function useCenters() {
+  return useQuery({ queryKey: qk.centers, queryFn: () => selectAll<Center>("centers", "name") });
 }
 export function useBuildings() {
   return useQuery({ queryKey: qk.buildings, queryFn: () => selectAll<Building>("buildings", "name") });

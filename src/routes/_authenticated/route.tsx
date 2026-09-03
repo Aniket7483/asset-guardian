@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { Shell } from "@/components/app/Shell";
+import { LocationScopeProvider } from "@/lib/scope";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -10,8 +11,10 @@ export const Route = createFileRoute("/_authenticated")({
     return { user: data.user };
   },
   component: () => (
-    <Shell>
-      <Outlet />
-    </Shell>
+    <LocationScopeProvider>
+      <Shell>
+        <Outlet />
+      </Shell>
+    </LocationScopeProvider>
   ),
 });
