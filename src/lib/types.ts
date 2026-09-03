@@ -7,6 +7,7 @@ export type AssetInsert = T["assets"]["Insert"];
 export type Category = T["categories"]["Row"];
 export type AssetStatus = T["asset_statuses"]["Row"];
 export type AssetCondition = T["asset_conditions"]["Row"];
+export type Center = T["centers"]["Row"];
 export type Building = T["buildings"]["Row"];
 export type Floor = T["floors"]["Row"];
 export type Room = T["rooms"]["Row"];
