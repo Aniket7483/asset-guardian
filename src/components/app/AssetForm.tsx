@@ -24,6 +24,7 @@ import {
   useStatuses,
   logHistory,
 } from "@/lib/queries";
+import { useLocationScope } from "@/lib/scope";
 import type { Asset } from "@/lib/types";
 import { NativeSelect } from "./NativeSelect";
 
@@ -89,6 +90,7 @@ export function AssetForm({
   const rooms = useRooms();
   const employees = useEmployees();
   const { create, update } = useCrud("assets");
+  const { scope } = useLocationScope();
 
   useEffect(() => {
     if (!open) return;
