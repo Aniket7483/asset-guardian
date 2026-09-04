@@ -90,6 +90,7 @@ export function AssetForm({
   const rooms = useRooms();
   const employees = useEmployees();
   const { create, update } = useCrud("assets");
+  const { scope } = useLocationScope();
 
   useEffect(() => {
     if (!open) return;
