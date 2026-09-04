@@ -16,7 +16,6 @@ import { Route as AuthenticatedAssignmentsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedEmployeesRouteImport } from './routes/_authenticated/employees'
 import { Route as AuthenticatedImportExportRouteImport } from './routes/_authenticated/import-export'
-import { Route as AuthenticatedLocationsRouteImport } from './routes/_authenticated/locations'
 import { Route as AuthenticatedMaintenanceRouteImport } from './routes/_authenticated/maintenance'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedScanRouteImport } from './routes/_authenticated/scan'
@@ -24,6 +23,9 @@ import { Route as AuthenticatedSettingsRouteImport } from './routes/_authenticat
 import { Route as AuthenticatedVerificationRouteImport } from './routes/_authenticated/verification'
 import { Route as AuthenticatedAssetsIndexRouteImport } from './routes/_authenticated/assets.index'
 import { Route as AuthenticatedAssetsIdRouteImport } from './routes/_authenticated/assets.$id'
+import { Route as AuthenticatedLocationsIndexRouteImport } from './routes/_authenticated/locations.index'
+import { Route as AuthenticatedLocationsCenterIdRouteImport } from './routes/_authenticated/locations.$centerId'
+import { Route as AuthenticatedLocationsCenterIdBuildingIdRouteImport } from './routes/_authenticated/locations.$centerId.$buildingId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -61,11 +63,6 @@ const AuthenticatedImportExportRoute =
     path: '/import-export',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedLocationsRoute = AuthenticatedLocationsRouteImport.update({
-  id: '/locations',
-  path: '/locations',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedMaintenanceRoute =
   AuthenticatedMaintenanceRouteImport.update({
     id: '/maintenance',
@@ -104,6 +101,24 @@ const AuthenticatedAssetsIdRoute = AuthenticatedAssetsIdRouteImport.update({
   path: '/assets/$id',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedLocationsIndexRoute =
+  AuthenticatedLocationsIndexRouteImport.update({
+    id: '/locations/',
+    path: '/locations/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLocationsCenterIdRoute =
+  AuthenticatedLocationsCenterIdRouteImport.update({
+    id: '/locations/$centerId',
+    path: '/locations/$centerId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedLocationsCenterIdBuildingIdRoute =
+  AuthenticatedLocationsCenterIdBuildingIdRouteImport.update({
+    id: '/$buildingId',
+    path: '/$buildingId',
+    getParentRoute: () => AuthenticatedLocationsCenterIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -112,14 +127,16 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/employees': typeof AuthenticatedEmployeesRoute
   '/import-export': typeof AuthenticatedImportExportRoute
-  '/locations': typeof AuthenticatedLocationsRoute
   '/maintenance': typeof AuthenticatedMaintenanceRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/scan': typeof AuthenticatedScanRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/verification': typeof AuthenticatedVerificationRoute
   '/assets/$id': typeof AuthenticatedAssetsIdRoute
+  '/locations/$centerId': typeof AuthenticatedLocationsCenterIdRouteWithChildren
   '/assets/': typeof AuthenticatedAssetsIndexRoute
+  '/locations/': typeof AuthenticatedLocationsIndexRoute
+  '/locations/$centerId/$buildingId': typeof AuthenticatedLocationsCenterIdBuildingIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -128,14 +145,16 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/employees': typeof AuthenticatedEmployeesRoute
   '/import-export': typeof AuthenticatedImportExportRoute
-  '/locations': typeof AuthenticatedLocationsRoute
   '/maintenance': typeof AuthenticatedMaintenanceRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/scan': typeof AuthenticatedScanRoute
   '/settings': typeof AuthenticatedSettingsRoute
   '/verification': typeof AuthenticatedVerificationRoute
   '/assets/$id': typeof AuthenticatedAssetsIdRoute
+  '/locations/$centerId': typeof AuthenticatedLocationsCenterIdRouteWithChildren
   '/assets': typeof AuthenticatedAssetsIndexRoute
+  '/locations': typeof AuthenticatedLocationsIndexRoute
+  '/locations/$centerId/$buildingId': typeof AuthenticatedLocationsCenterIdBuildingIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -146,14 +165,16 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/employees': typeof AuthenticatedEmployeesRoute
   '/_authenticated/import-export': typeof AuthenticatedImportExportRoute
-  '/_authenticated/locations': typeof AuthenticatedLocationsRoute
   '/_authenticated/maintenance': typeof AuthenticatedMaintenanceRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/scan': typeof AuthenticatedScanRoute
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/verification': typeof AuthenticatedVerificationRoute
   '/_authenticated/assets/$id': typeof AuthenticatedAssetsIdRoute
+  '/_authenticated/locations/$centerId': typeof AuthenticatedLocationsCenterIdRouteWithChildren
   '/_authenticated/assets/': typeof AuthenticatedAssetsIndexRoute
+  '/_authenticated/locations/': typeof AuthenticatedLocationsIndexRoute
+  '/_authenticated/locations/$centerId/$buildingId': typeof AuthenticatedLocationsCenterIdBuildingIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -164,14 +185,16 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/employees'
     | '/import-export'
-    | '/locations'
     | '/maintenance'
     | '/reports'
     | '/scan'
     | '/settings'
     | '/verification'
     | '/assets/$id'
+    | '/locations/$centerId'
     | '/assets/'
+    | '/locations/'
+    | '/locations/$centerId/$buildingId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -180,14 +203,16 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/employees'
     | '/import-export'
-    | '/locations'
     | '/maintenance'
     | '/reports'
     | '/scan'
     | '/settings'
     | '/verification'
     | '/assets/$id'
+    | '/locations/$centerId'
     | '/assets'
+    | '/locations'
+    | '/locations/$centerId/$buildingId'
   id:
     | '__root__'
     | '/'
@@ -197,14 +222,16 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/employees'
     | '/_authenticated/import-export'
-    | '/_authenticated/locations'
     | '/_authenticated/maintenance'
     | '/_authenticated/reports'
     | '/_authenticated/scan'
     | '/_authenticated/settings'
     | '/_authenticated/verification'
     | '/_authenticated/assets/$id'
+    | '/_authenticated/locations/$centerId'
     | '/_authenticated/assets/'
+    | '/_authenticated/locations/'
+    | '/_authenticated/locations/$centerId/$buildingId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -264,13 +291,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedImportExportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/locations': {
-      id: '/_authenticated/locations'
-      path: '/locations'
-      fullPath: '/locations'
-      preLoaderRoute: typeof AuthenticatedLocationsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/maintenance': {
       id: '/_authenticated/maintenance'
       path: '/maintenance'
@@ -320,22 +340,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAssetsIdRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/locations/': {
+      id: '/_authenticated/locations/'
+      path: '/locations'
+      fullPath: '/locations/'
+      preLoaderRoute: typeof AuthenticatedLocationsIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/locations/$centerId': {
+      id: '/_authenticated/locations/$centerId'
+      path: '/locations/$centerId'
+      fullPath: '/locations/$centerId'
+      preLoaderRoute: typeof AuthenticatedLocationsCenterIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/locations/$centerId/$buildingId': {
+      id: '/_authenticated/locations/$centerId/$buildingId'
+      path: '/$buildingId'
+      fullPath: '/locations/$centerId/$buildingId'
+      preLoaderRoute: typeof AuthenticatedLocationsCenterIdBuildingIdRouteImport
+      parentRoute: typeof AuthenticatedLocationsCenterIdRoute
+    }
   }
 }
+
+interface AuthenticatedLocationsCenterIdRouteChildren {
+  AuthenticatedLocationsCenterIdBuildingIdRoute: typeof AuthenticatedLocationsCenterIdBuildingIdRoute
+}
+
+const AuthenticatedLocationsCenterIdRouteChildren: AuthenticatedLocationsCenterIdRouteChildren =
+  {
+    AuthenticatedLocationsCenterIdBuildingIdRoute:
+      AuthenticatedLocationsCenterIdBuildingIdRoute,
+  }
+
+const AuthenticatedLocationsCenterIdRouteWithChildren =
+  AuthenticatedLocationsCenterIdRoute._addFileChildren(
+    AuthenticatedLocationsCenterIdRouteChildren,
+  )
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAssignmentsRoute: typeof AuthenticatedAssignmentsRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEmployeesRoute: typeof AuthenticatedEmployeesRoute
   AuthenticatedImportExportRoute: typeof AuthenticatedImportExportRoute
-  AuthenticatedLocationsRoute: typeof AuthenticatedLocationsRoute
   AuthenticatedMaintenanceRoute: typeof AuthenticatedMaintenanceRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedScanRoute: typeof AuthenticatedScanRoute
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedVerificationRoute: typeof AuthenticatedVerificationRoute
   AuthenticatedAssetsIdRoute: typeof AuthenticatedAssetsIdRoute
+  AuthenticatedLocationsCenterIdRoute: typeof AuthenticatedLocationsCenterIdRouteWithChildren
   AuthenticatedAssetsIndexRoute: typeof AuthenticatedAssetsIndexRoute
+  AuthenticatedLocationsIndexRoute: typeof AuthenticatedLocationsIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -343,14 +400,16 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEmployeesRoute: AuthenticatedEmployeesRoute,
   AuthenticatedImportExportRoute: AuthenticatedImportExportRoute,
-  AuthenticatedLocationsRoute: AuthenticatedLocationsRoute,
   AuthenticatedMaintenanceRoute: AuthenticatedMaintenanceRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedScanRoute: AuthenticatedScanRoute,
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedVerificationRoute: AuthenticatedVerificationRoute,
   AuthenticatedAssetsIdRoute: AuthenticatedAssetsIdRoute,
+  AuthenticatedLocationsCenterIdRoute:
+    AuthenticatedLocationsCenterIdRouteWithChildren,
   AuthenticatedAssetsIndexRoute: AuthenticatedAssetsIndexRoute,
+  AuthenticatedLocationsIndexRoute: AuthenticatedLocationsIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

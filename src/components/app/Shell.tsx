@@ -20,7 +20,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
-import { ScopeBar } from "@/components/app/ScopeBar";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -158,8 +157,6 @@ export function Shell({ children }: { children: ReactNode }) {
             </Button>
           </div>
         </header>
-
-        <ScopeBar />
 
         <main className="min-w-0 flex-1 p-4 lg:p-6">{children}</main>
       </div>
