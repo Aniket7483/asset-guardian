@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useAssets, useBuildings, useCenters, useCrud, useFloors, useRooms } from "@/lib/queries";
 import { useAuth } from "@/hooks/useAuth";
+import { StatTile } from "@/components/app/StatTile";
 
 export const Route = createFileRoute("/_authenticated/locations/$centerId")({
   head: () => ({
@@ -23,15 +24,6 @@ export const Route = createFileRoute("/_authenticated/locations/$centerId")({
   }),
   component: CenterPage,
 });
-
-export function StatTile({ label, value }: { label: string; value: number }) {
-  return (
-    <Card className="p-4">
-      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-1 text-2xl font-bold tabular-nums">{value}</p>
-    </Card>
-  );
-}
 
 function CenterPage() {
   const { centerId } = Route.useParams();

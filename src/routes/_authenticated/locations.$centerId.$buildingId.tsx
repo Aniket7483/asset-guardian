@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useAssets, useBuildings, useCenters, useCrud, useFloors, useRooms } from "@/lib/queries";
 import { useAuth } from "@/hooks/useAuth";
-import { StatTile } from "./locations.$centerId";
+import { StatTile } from "@/components/app/StatTile";
 
 export const Route = createFileRoute("/_authenticated/locations/$centerId/$buildingId")({
   head: () => ({
