@@ -24,6 +24,7 @@ import { Route as AuthenticatedVerificationRouteImport } from './routes/_authent
 import { Route as AuthenticatedAssetsIndexRouteImport } from './routes/_authenticated/assets.index'
 import { Route as AuthenticatedAssetsIdRouteImport } from './routes/_authenticated/assets.$id'
 import { Route as AuthenticatedLocationsIndexRouteImport } from './routes/_authenticated/locations.index'
+import { Route as AuthenticatedLocationsCenterIdRouteImport } from './routes/_authenticated/locations.$centerId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -105,6 +106,12 @@ const AuthenticatedLocationsIndexRoute =
     path: '/locations/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedLocationsCenterIdRoute =
+  AuthenticatedLocationsCenterIdRouteImport.update({
+    id: '/locations/$centerId',
+    path: '/locations/$centerId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -119,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/settings': typeof AuthenticatedSettingsRoute
   '/verification': typeof AuthenticatedVerificationRoute
   '/assets/$id': typeof AuthenticatedAssetsIdRoute
+  '/locations/$centerId': typeof AuthenticatedLocationsCenterIdRoute
   '/assets/': typeof AuthenticatedAssetsIndexRoute
   '/locations/': typeof AuthenticatedLocationsIndexRoute
 }
@@ -135,6 +143,7 @@ export interface FileRoutesByTo {
   '/settings': typeof AuthenticatedSettingsRoute
   '/verification': typeof AuthenticatedVerificationRoute
   '/assets/$id': typeof AuthenticatedAssetsIdRoute
+  '/locations/$centerId': typeof AuthenticatedLocationsCenterIdRoute
   '/assets': typeof AuthenticatedAssetsIndexRoute
   '/locations': typeof AuthenticatedLocationsIndexRoute
 }
@@ -153,6 +162,7 @@ export interface FileRoutesById {
   '/_authenticated/settings': typeof AuthenticatedSettingsRoute
   '/_authenticated/verification': typeof AuthenticatedVerificationRoute
   '/_authenticated/assets/$id': typeof AuthenticatedAssetsIdRoute
+  '/_authenticated/locations/$centerId': typeof AuthenticatedLocationsCenterIdRoute
   '/_authenticated/assets/': typeof AuthenticatedAssetsIndexRoute
   '/_authenticated/locations/': typeof AuthenticatedLocationsIndexRoute
 }
@@ -171,6 +181,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/verification'
     | '/assets/$id'
+    | '/locations/$centerId'
     | '/assets/'
     | '/locations/'
   fileRoutesByTo: FileRoutesByTo
@@ -187,6 +198,7 @@ export interface FileRouteTypes {
     | '/settings'
     | '/verification'
     | '/assets/$id'
+    | '/locations/$centerId'
     | '/assets'
     | '/locations'
   id:
@@ -204,6 +216,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings'
     | '/_authenticated/verification'
     | '/_authenticated/assets/$id'
+    | '/_authenticated/locations/$centerId'
     | '/_authenticated/assets/'
     | '/_authenticated/locations/'
   fileRoutesById: FileRoutesById
@@ -321,6 +334,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedLocationsIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/locations/$centerId': {
+      id: '/_authenticated/locations/$centerId'
+      path: '/locations/$centerId'
+      fullPath: '/locations/$centerId'
+      preLoaderRoute: typeof AuthenticatedLocationsCenterIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -335,6 +355,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedSettingsRoute: typeof AuthenticatedSettingsRoute
   AuthenticatedVerificationRoute: typeof AuthenticatedVerificationRoute
   AuthenticatedAssetsIdRoute: typeof AuthenticatedAssetsIdRoute
+  AuthenticatedLocationsCenterIdRoute: typeof AuthenticatedLocationsCenterIdRoute
   AuthenticatedAssetsIndexRoute: typeof AuthenticatedAssetsIndexRoute
   AuthenticatedLocationsIndexRoute: typeof AuthenticatedLocationsIndexRoute
 }
@@ -350,6 +371,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedSettingsRoute: AuthenticatedSettingsRoute,
   AuthenticatedVerificationRoute: AuthenticatedVerificationRoute,
   AuthenticatedAssetsIdRoute: AuthenticatedAssetsIdRoute,
+  AuthenticatedLocationsCenterIdRoute: AuthenticatedLocationsCenterIdRoute,
   AuthenticatedAssetsIndexRoute: AuthenticatedAssetsIndexRoute,
   AuthenticatedLocationsIndexRoute: AuthenticatedLocationsIndexRoute,
 }
