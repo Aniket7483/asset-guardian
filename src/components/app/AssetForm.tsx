@@ -24,6 +24,7 @@ import {
   useStatuses,
   logHistory,
 } from "@/lib/queries";
+import { useLocationScope } from "@/lib/scope";
 import type { Asset } from "@/lib/types";
 import { NativeSelect } from "./NativeSelect";
 
