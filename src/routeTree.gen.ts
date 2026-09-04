@@ -16,7 +16,6 @@ import { Route as AuthenticatedAssignmentsRouteImport } from './routes/_authenti
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedEmployeesRouteImport } from './routes/_authenticated/employees'
 import { Route as AuthenticatedImportExportRouteImport } from './routes/_authenticated/import-export'
-import { Route as AuthenticatedLocationsRouteImport } from './routes/_authenticated/locations'
 import { Route as AuthenticatedMaintenanceRouteImport } from './routes/_authenticated/maintenance'
 import { Route as AuthenticatedReportsRouteImport } from './routes/_authenticated/reports'
 import { Route as AuthenticatedScanRouteImport } from './routes/_authenticated/scan'
@@ -61,11 +60,6 @@ const AuthenticatedImportExportRoute =
     path: '/import-export',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedLocationsRoute = AuthenticatedLocationsRouteImport.update({
-  id: '/locations',
-  path: '/locations',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const AuthenticatedMaintenanceRoute =
   AuthenticatedMaintenanceRouteImport.update({
     id: '/maintenance',
@@ -112,7 +106,6 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/employees': typeof AuthenticatedEmployeesRoute
   '/import-export': typeof AuthenticatedImportExportRoute
-  '/locations': typeof AuthenticatedLocationsRoute
   '/maintenance': typeof AuthenticatedMaintenanceRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/scan': typeof AuthenticatedScanRoute
@@ -128,7 +121,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/employees': typeof AuthenticatedEmployeesRoute
   '/import-export': typeof AuthenticatedImportExportRoute
-  '/locations': typeof AuthenticatedLocationsRoute
   '/maintenance': typeof AuthenticatedMaintenanceRoute
   '/reports': typeof AuthenticatedReportsRoute
   '/scan': typeof AuthenticatedScanRoute
@@ -146,7 +138,6 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/employees': typeof AuthenticatedEmployeesRoute
   '/_authenticated/import-export': typeof AuthenticatedImportExportRoute
-  '/_authenticated/locations': typeof AuthenticatedLocationsRoute
   '/_authenticated/maintenance': typeof AuthenticatedMaintenanceRoute
   '/_authenticated/reports': typeof AuthenticatedReportsRoute
   '/_authenticated/scan': typeof AuthenticatedScanRoute
@@ -164,7 +155,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/employees'
     | '/import-export'
-    | '/locations'
     | '/maintenance'
     | '/reports'
     | '/scan'
@@ -180,7 +170,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/employees'
     | '/import-export'
-    | '/locations'
     | '/maintenance'
     | '/reports'
     | '/scan'
@@ -197,7 +186,6 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/employees'
     | '/_authenticated/import-export'
-    | '/_authenticated/locations'
     | '/_authenticated/maintenance'
     | '/_authenticated/reports'
     | '/_authenticated/scan'
@@ -264,13 +252,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedImportExportRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/locations': {
-      id: '/_authenticated/locations'
-      path: '/locations'
-      fullPath: '/locations'
-      preLoaderRoute: typeof AuthenticatedLocationsRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/_authenticated/maintenance': {
       id: '/_authenticated/maintenance'
       path: '/maintenance'
@@ -328,7 +309,6 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEmployeesRoute: typeof AuthenticatedEmployeesRoute
   AuthenticatedImportExportRoute: typeof AuthenticatedImportExportRoute
-  AuthenticatedLocationsRoute: typeof AuthenticatedLocationsRoute
   AuthenticatedMaintenanceRoute: typeof AuthenticatedMaintenanceRoute
   AuthenticatedReportsRoute: typeof AuthenticatedReportsRoute
   AuthenticatedScanRoute: typeof AuthenticatedScanRoute
@@ -343,7 +323,6 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEmployeesRoute: AuthenticatedEmployeesRoute,
   AuthenticatedImportExportRoute: AuthenticatedImportExportRoute,
-  AuthenticatedLocationsRoute: AuthenticatedLocationsRoute,
   AuthenticatedMaintenanceRoute: AuthenticatedMaintenanceRoute,
   AuthenticatedReportsRoute: AuthenticatedReportsRoute,
   AuthenticatedScanRoute: AuthenticatedScanRoute,
