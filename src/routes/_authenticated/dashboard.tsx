@@ -26,7 +26,8 @@ import { PageHeader } from "@/components/app/PageHeader";
 import { StatusBadge } from "@/components/app/StatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useAssets, useCategories, useEmployees, useMaintenance } from "@/lib/queries";
+import { useAssets, useAssignments, useCategories, useEmployees, useMaintenance } from "@/lib/queries";
+import { assignedQtyMap, availableQty } from "@/lib/quantity";
 import { formatCurrency, formatDate } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -96,14 +97,19 @@ function Stat({
 
 function DashboardPage() {
   const assets = useAssets();
+  const assignments = useAssignments();
   const categories = useCategories();
   const employees = useEmployees();
   const maintenance = useMaintenance();
 
   const rows = useMemo(() => (assets.data ?? []).filter((a) => !a.archived), [assets.data]);
 
+  const assignedMap = useMemo(() => assignedQtyMap(assignments.data), [assignments.data]);
+
   const stats = useMemo(() => {
     const total = rows.reduce((n, a) => n + (a.quantity ?? 1), 0);
+    const assignedUnits = rows.reduce((n, a) => n + (assignedMap.get(a.id) ?? 0), 0);
+    const availableUnits = rows.reduce((n, a) => n + availableQty(a, assignedMap), 0);
     const value = rows.reduce((n, a) => n + Number(a.purchase_price ?? 0) * (a.quantity ?? 1), 0);
     const by = (s: string) => rows.filter((a) => a.status === s).length;
     const soon = new Date();
@@ -115,13 +121,13 @@ function DashboardPage() {
       total,
       records: rows.length,
       value,
-      available: by("Available"),
-      assigned: by("Assigned") + by("In Use"),
+      available: availableUnits,
+      assigned: assignedUnits,
       maintenance: by("Under Maintenance"),
       issues: by("Damaged") + by("Lost"),
       expiring,
     };
-  }, [rows]);
+  }, [rows, assignedMap]);
 
   const byCategory = useMemo(() => {
     const map = new Map<string, number>();
@@ -168,8 +174,20 @@ function DashboardPage() {
           icon={Boxes}
           hint={`${stats.records} asset records`}
         />
-        <Stat label="Available" value={stats.available} icon={CheckCircle2} tone="success" />
-        <Stat label="Assigned" value={stats.assigned} icon={UserCheck} tone="info" />
+        <Stat
+          label="Available"
+          value={stats.available}
+          icon={CheckCircle2}
+          tone="success"
+          hint="Units in stock"
+        />
+        <Stat
+          label="Assigned"
+          value={stats.assigned}
+          icon={UserCheck}
+          tone="info"
+          hint="Units with employees"
+        />
         <Stat
           label="Total value"
           value={formatCurrency(stats.value)}

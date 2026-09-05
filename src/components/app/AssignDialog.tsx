@@ -12,48 +12,67 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useAssets, useEmployees, useRefresh, logHistory } from "@/lib/queries";
+import { useAssets, useAssignments, useEmployees, useRefresh, logHistory } from "@/lib/queries";
+import { assignedQtyMap, availableQty } from "@/lib/quantity";
 import { todayISO } from "@/lib/format";
 import { NativeSelect } from "./NativeSelect";
 import { Field } from "./AssetForm";
 import type { Asset } from "@/lib/types";
 
+/** Sum of quantities currently held out of stock for one asset. */
+async function fetchAssignedQty(assetId: string) {
+  const { data } = await supabase
+    .from("assignments")
+    .select("quantity")
+    .eq("asset_id", assetId)
+    .is("returned_date", null);
+  return (data ?? []).reduce((n, r) => n + ((r as { quantity?: number }).quantity ?? 1), 0);
+}
+
 export async function assignAsset(params: {
   asset: Asset;
   employeeId: string;
   date: string;
+  quantity?: number;
   expectedReturn?: string;
   notes?: string;
   employeeName?: string;
 }) {
   const { asset, employeeId, date, expectedReturn, notes, employeeName } = params;
-  if (asset.assigned_employee_id && asset.assigned_employee_id !== employeeId) {
-    await supabase
-      .from("assignments")
-      .update({ returned_date: date })
-      .eq("asset_id", asset.id)
-      .is("returned_date", null);
+  const total = asset.quantity ?? 1;
+  const alreadyOut = await fetchAssignedQty(asset.id);
+  const available = Math.max(0, total - alreadyOut);
+  const qty = Math.max(1, Math.floor(params.quantity ?? 1));
+  if (qty > available) {
+    throw new Error(`Only ${available} of ${total} available to assign`);
   }
+
   await supabase.from("assignments").insert({
     asset_id: asset.id,
     employee_id: employeeId,
     assigned_date: date,
+    quantity: qty,
     expected_return_date: expectedReturn || null,
     notes: notes || null,
   });
+
+  const nowOut = alreadyOut + qty;
+  const fullyOut = nowOut >= total;
   await supabase
     .from("assets")
     .update({
-      assigned_employee_id: employeeId,
-      assigned_at: date,
-      expected_return_date: expectedReturn || null,
-      status: "Assigned",
+      // Only pin a single holder when the whole stock is with one person.
+      assigned_employee_id: fullyOut && nowOut === qty ? employeeId : fullyOut ? asset.assigned_employee_id ?? employeeId : null,
+      assigned_at: fullyOut ? date : null,
+      expected_return_date: fullyOut ? expectedReturn || null : null,
+      status: fullyOut ? "Assigned" : "Available",
     })
     .eq("id", asset.id);
+
   await logHistory(
     asset.id,
-    asset.assigned_employee_id ? "Asset Reassigned" : "Asset Assigned",
-    `Assigned to ${employeeName ?? "employee"} on ${date}`,
+    "Asset Assigned",
+    `${qty} of ${total} assigned to ${employeeName ?? "employee"} on ${date} · ${total - nowOut} left available`,
   );
 }
 
@@ -87,12 +106,14 @@ export function AssignDialog({
 }) {
   const employees = useEmployees();
   const assets = useAssets();
+  const assignments = useAssignments();
   const refresh = useRefresh();
   const [assetId, setAssetId] = useState("");
   const [employeeId, setEmployeeId] = useState("");
   const [date, setDate] = useState(todayISO());
   const [expected, setExpected] = useState("");
   const [notes, setNotes] = useState("");
+  const [qty, setQty] = useState("1");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -102,14 +123,25 @@ export function AssignDialog({
       setDate(todayISO());
       setExpected("");
       setNotes("");
+      setQty("1");
     }
   }, [open, asset]);
 
+  const assignedMap = assignedQtyMap(assignments.data);
+  const target = asset ?? (assets.data ?? []).find((a) => a.id === assetId) ?? null;
+  const total = target ? target.quantity ?? 1 : 0;
+  const available = target ? availableQty(target, assignedMap) : 0;
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const target = asset ?? (assets.data ?? []).find((a) => a.id === assetId);
     if (!target) { toast.error("Select an asset"); return; }
     if (!employeeId) { toast.error("Select an employee"); return; }
+    const amount = Math.floor(Number(qty) || 0);
+    if (amount < 1) { toast.error("Enter a quantity of at least 1"); return; }
+    if (amount > available) {
+      toast.error(`Only ${available} of ${total} available to assign`);
+      return;
+    }
     setSaving(true);
     try {
       const emp = (employees.data ?? []).find((x) => x.id === employeeId);
@@ -117,12 +149,15 @@ export function AssignDialog({
         asset: target,
         employeeId,
         date,
+        quantity: amount,
         expectedReturn: expected,
         notes,
         ...(emp?.name ? { employeeName: emp.name } : {}),
       });
       refresh();
-      toast.success(`${target.asset_code} assigned to ${emp?.name}`);
+      toast.success(
+        `${amount} × ${target.asset_code} assigned to ${emp?.name} · ${available - amount} left available`,
+      );
       onOpenChange(false);
     } catch (err) {
       toast.error((err as { message?: string }).message ?? "Assignment failed");
@@ -159,6 +194,23 @@ export function AssignDialog({
               <span className="font-mono font-semibold">{asset.asset_code}</span> — {asset.name}
             </p>
           )}
+          {target ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Assign quantity" required>
+                <Input
+                  type="number"
+                  min={1}
+                  max={Math.max(1, available)}
+                  value={qty}
+                  onChange={(e) => setQty(e.target.value)}
+                  disabled={available === 0}
+                />
+              </Field>
+              <div className="self-end rounded-lg bg-muted px-3 py-2 text-sm">
+                <span className="font-semibold">{available}</span> available of {total}
+              </div>
+            </div>
+          ) : null}
           <Field label="Employee" required>
             <NativeSelect value={employeeId} onChange={setEmployeeId}>
               <option value="">Select employee</option>

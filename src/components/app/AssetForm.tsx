@@ -28,6 +28,8 @@ import { useLocationScope } from "@/lib/scope";
 import type { Asset } from "@/lib/types";
 import { NativeSelect } from "./NativeSelect";
 
+const NEW_CATEGORY = "__new_category__";
+
 const EMPTY = {
   name: "",
   category_id: "",
@@ -90,10 +92,43 @@ export function AssetForm({
   const rooms = useRooms();
   const employees = useEmployees();
   const { create, update } = useCrud("assets");
+  const categoryCrud = useCrud("categories");
   const { scope } = useLocationScope();
+  const [newCategory, setNewCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [creatingCategory, setCreatingCategory] = useState(false);
+
+  const createCategory = async () => {
+    const name = newCategoryName.trim();
+    if (!name) return;
+    const existing = (categories.data ?? []).find(
+      (c) => c.name.toLowerCase() === name.toLowerCase(),
+    );
+    if (existing) {
+      set("category_id", existing.id);
+      setNewCategory(false);
+      setNewCategoryName("");
+      toast.info("That category already exists — selected it for you");
+      return;
+    }
+    setCreatingCategory(true);
+    try {
+      const created = (await categoryCrud.create.mutateAsync({ name })) as { id: string };
+      set("category_id", created.id);
+      setNewCategory(false);
+      setNewCategoryName("");
+      toast.success(`Category "${name}" created`);
+    } catch (err) {
+      toast.error((err as Error).message);
+    } finally {
+      setCreatingCategory(false);
+    }
+  };
 
   useEffect(() => {
     if (!open) return;
+    setNewCategory(false);
+    setNewCategoryName("");
     if (asset) {
       setForm(toState(asset));
       return;
@@ -208,14 +243,43 @@ export function AssetForm({
                 <Input value={form.name} onChange={(e) => set("name", e.target.value)} required />
               </Field>
               <Field label="Category">
-                <NativeSelect value={form.category_id} onChange={(v) => set("category_id", v)}>
+                <NativeSelect
+                  value={newCategory ? NEW_CATEGORY : form.category_id}
+                  onChange={(v) => {
+                    if (v === NEW_CATEGORY) {
+                      setNewCategory(true);
+                      set("category_id", "");
+                    } else {
+                      setNewCategory(false);
+                      set("category_id", v);
+                    }
+                  }}
+                >
                   <option value="">Select category</option>
                   {(categories.data ?? []).map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}
                     </option>
                   ))}
+                  <option value={NEW_CATEGORY}>+ Create new category…</option>
                 </NativeSelect>
+                {newCategory ? (
+                  <div className="mt-2 flex gap-2">
+                    <Input
+                      value={newCategoryName}
+                      onChange={(e) => setNewCategoryName(e.target.value)}
+                      placeholder="New category name"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={!newCategoryName.trim() || creatingCategory}
+                      onClick={createCategory}
+                    >
+                      {creatingCategory ? "Adding…" : "Add"}
+                    </Button>
+                  </div>
+                ) : null}
               </Field>
               <Field label="Asset type">
                 <Input value={form.asset_type} onChange={(e) => set("asset_type", e.target.value)} />

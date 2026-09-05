@@ -30,6 +30,7 @@ import {
 import { toast } from "sonner";
 import {
   useAssets,
+  useAssignments,
   useBuildings,
   useCategories,
   useCrud,
@@ -39,6 +40,7 @@ import {
 } from "@/lib/queries";
 import { formatCurrency, formatDate, dash } from "@/lib/format";
 import { exportRows } from "@/lib/excel";
+import { assignedQtyMap, availableQty } from "@/lib/quantity";
 import type { Asset } from "@/lib/types";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -70,6 +72,7 @@ function AssetsPage() {
   const navigate = useNavigate();
   const { q, status, category, building } = Route.useSearch();
   const assets = useAssets();
+  const assignments = useAssignments();
   const categories = useCategories();
   const statuses = useStatuses();
   const buildings = useBuildings();
@@ -103,6 +106,8 @@ function AssetsPage() {
       );
   }, [assets.data, q, status, category, building]);
 
+  const assignedMap = useMemo(() => assignedQtyMap(assignments.data), [assignments.data]);
+
   const nameOf = (list: { id: string; name: string }[] | undefined, id: string | null) =>
     list?.find((x) => x.id === id)?.name ?? "—";
 
@@ -117,6 +122,8 @@ function AssetsPage() {
         Model: dash(a.model),
         Serial: dash(a.serial_number),
         Quantity: a.quantity ?? 1,
+        Assigned: assignedMap.get(a.id) ?? 0,
+        Available: availableQty(a, assignedMap),
         Status: a.status,
         Condition: a.condition,
         Building: nameOf(buildings.data, a.building_id),
@@ -245,7 +252,7 @@ function AssetsPage() {
                       </Link>
                       <p className="text-xs text-muted-foreground">
                         {[a.brand, a.model].filter(Boolean).join(" ") || "—"}
-                        {a.quantity && a.quantity > 1 ? ` · Qty ${a.quantity}` : ""}
+                        {` · ${availableQty(a, assignedMap)} available of ${a.quantity ?? 1}`}
                       </p>
                     </TableCell>
                     <TableCell className="text-sm">{nameOf(categories.data, a.category_id)}</TableCell>
