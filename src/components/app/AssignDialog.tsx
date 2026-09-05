@@ -194,6 +194,23 @@ export function AssignDialog({
               <span className="font-mono font-semibold">{asset.asset_code}</span> — {asset.name}
             </p>
           )}
+          {target ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Field label="Assign quantity" required>
+                <Input
+                  type="number"
+                  min={1}
+                  max={Math.max(1, available)}
+                  value={qty}
+                  onChange={(e) => setQty(e.target.value)}
+                  disabled={available === 0}
+                />
+              </Field>
+              <div className="self-end rounded-lg bg-muted px-3 py-2 text-sm">
+                <span className="font-semibold">{available}</span> available of {total}
+              </div>
+            </div>
+          ) : null}
           <Field label="Employee" required>
             <NativeSelect value={employeeId} onChange={setEmployeeId}>
               <option value="">Select employee</option>
