@@ -28,6 +28,8 @@ import { useLocationScope } from "@/lib/scope";
 import type { Asset } from "@/lib/types";
 import { NativeSelect } from "./NativeSelect";
 
+const NEW_CATEGORY = "__new_category__";
+
 const EMPTY = {
   name: "",
   category_id: "",
