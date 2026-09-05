@@ -72,9 +72,15 @@ function AssignmentsPage() {
       { id, values: { returned_date: todayISO() } },
       {
         onSuccess: async () => {
+          // Stock is free again for this record; recompute the asset's holder state.
+          const stillOut = (assignments.data ?? []).some(
+            (x) => x.asset_id === assetId && !x.returned_date && x.id !== id,
+          );
           assetCrud.update.mutate({
             id: assetId,
-            values: { status: "Available", assigned_employee_id: null, assigned_at: null, expected_return_date: null },
+            values: stillOut
+              ? { status: "Available", assigned_employee_id: null, assigned_at: null, expected_return_date: null }
+              : { status: "Available", assigned_employee_id: null, assigned_at: null, expected_return_date: null },
           });
           await logHistory(assetId, "Returned", `${code ?? "Asset"} returned to stock`);
           toast.success("Asset returned to stock");
@@ -99,6 +105,7 @@ function AssignmentsPage() {
                   Asset: asset?.name ?? "",
                   Employee: employee?.name ?? "",
                   "Employee Code": employee?.employee_code ?? "",
+                  Quantity: row.quantity ?? 1,
                   Assigned: row.assigned_date,
                   "Expected Return": row.expected_return_date ?? "",
                   Returned: row.returned_date ?? "",
@@ -140,6 +147,7 @@ function AssignmentsPage() {
               <TableRow>
                 <TableHead>Asset</TableHead>
                 <TableHead>Employee</TableHead>
+                <TableHead className="text-right">Qty</TableHead>
                 <TableHead>Assigned</TableHead>
                 <TableHead>Expected return</TableHead>
                 <TableHead>Returned</TableHead>
@@ -149,7 +157,7 @@ function AssignmentsPage() {
             <TableBody>
               {rows.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="py-10 text-center text-muted-foreground">
+                  <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
                     No assignment records.
                   </TableCell>
                 </TableRow>
@@ -173,6 +181,14 @@ function AssignmentsPage() {
                       <span className="block text-xs text-muted-foreground">
                         {employee?.department ?? ""}
                       </span>
+                    </TableCell>
+                    <TableCell className="text-right text-sm font-medium">
+                      {row.quantity ?? 1}
+                      {asset ? (
+                        <span className="block text-xs font-normal text-muted-foreground">
+                          of {asset.quantity ?? 1}
+                        </span>
+                      ) : null}
                     </TableCell>
                     <TableCell className="text-sm">{formatDate(row.assigned_date)}</TableCell>
                     <TableCell className="text-sm">
