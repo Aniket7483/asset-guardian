@@ -136,17 +136,29 @@ export async function logHistory(assetId: string, action: string, details?: stri
   });
 }
 
-/** Generic invalidation for every asset-related cache. */
+/** Keys that change when a given table is written to — keeps refetching minimal. */
+function relatedKeys(table: string): string[] {
+  if (table === "assets") return ["assets", "asset", "asset_history", "assignments"];
+  if (table === "assignments") return ["assignments", "assets", "asset", "asset_history"];
+  if (table === "maintenance" || table === "incidents") return [table, "assets", "asset"];
+  return [table];
+}
+
+function invalidateKeys(qc: ReturnType<typeof useQueryClient>, keys: string[]) {
+  for (const key of keys) qc.invalidateQueries({ queryKey: [key] });
+}
+
+/** Invalidation for asset-related caches after a write. */
 export function useRefresh() {
   const qc = useQueryClient();
   return () => {
-    qc.invalidateQueries();
+    invalidateKeys(qc, ["assets", "asset", "asset_history", "assignments", "maintenance", "incidents"]);
   };
 }
 
 export function useCrud(table: string) {
   const qc = useQueryClient();
-  const invalidate = () => qc.invalidateQueries();
+  const invalidate = () => invalidateKeys(qc, relatedKeys(table));
 
   const create = useMutation({
     mutationFn: async (values: Record<string, unknown>) => {
