@@ -127,6 +127,8 @@ export function AssetForm({
 
   useEffect(() => {
     if (!open) return;
+    setNewCategory(false);
+    setNewCategoryName("");
     if (asset) {
       setForm(toState(asset));
       return;
