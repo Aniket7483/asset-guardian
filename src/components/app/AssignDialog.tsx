@@ -18,42 +18,60 @@ import { NativeSelect } from "./NativeSelect";
 import { Field } from "./AssetForm";
 import type { Asset } from "@/lib/types";
 
+/** Sum of quantities currently held out of stock for one asset. */
+async function fetchAssignedQty(assetId: string) {
+  const { data } = await supabase
+    .from("assignments")
+    .select("quantity")
+    .eq("asset_id", assetId)
+    .is("returned_date", null);
+  return (data ?? []).reduce((n, r) => n + ((r as { quantity?: number }).quantity ?? 1), 0);
+}
+
 export async function assignAsset(params: {
   asset: Asset;
   employeeId: string;
   date: string;
+  quantity?: number;
   expectedReturn?: string;
   notes?: string;
   employeeName?: string;
 }) {
   const { asset, employeeId, date, expectedReturn, notes, employeeName } = params;
-  if (asset.assigned_employee_id && asset.assigned_employee_id !== employeeId) {
-    await supabase
-      .from("assignments")
-      .update({ returned_date: date })
-      .eq("asset_id", asset.id)
-      .is("returned_date", null);
+  const total = asset.quantity ?? 1;
+  const alreadyOut = await fetchAssignedQty(asset.id);
+  const available = Math.max(0, total - alreadyOut);
+  const qty = Math.max(1, Math.floor(params.quantity ?? 1));
+  if (qty > available) {
+    throw new Error(`Only ${available} of ${total} available to assign`);
   }
+
   await supabase.from("assignments").insert({
     asset_id: asset.id,
     employee_id: employeeId,
     assigned_date: date,
+    quantity: qty,
     expected_return_date: expectedReturn || null,
     notes: notes || null,
   });
+
+  const nowOut = alreadyOut + qty;
+  const fullyOut = nowOut >= total;
   await supabase
     .from("assets")
     .update({
-      assigned_employee_id: employeeId,
-      assigned_at: date,
-      expected_return_date: expectedReturn || null,
-      status: "Assigned",
+      // Only pin a single holder when the whole stock is with one person.
+      assigned_employee_id: fullyOut && nowOut === qty ? employeeId : fullyOut ? asset.assigned_employee_id ?? employeeId : null,
+      assigned_at: fullyOut ? date : null,
+      expected_return_date: fullyOut ? expectedReturn || null : null,
+      status: fullyOut ? "Assigned" : "Available",
     })
     .eq("id", asset.id);
+
   await logHistory(
     asset.id,
-    asset.assigned_employee_id ? "Asset Reassigned" : "Asset Assigned",
-    `Assigned to ${employeeName ?? "employee"} on ${date}`,
+    "Asset Assigned",
+    `${qty} of ${total} assigned to ${employeeName ?? "employee"} on ${date} · ${total - nowOut} left available`,
   );
 }
 

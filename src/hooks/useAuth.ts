@@ -1,35 +1,35 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import type { User } from "@supabase/supabase-js";
 import type { AppRole } from "@/lib/types";
 
+/** Shared across the app via React Query, so the session/role is fetched once. */
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
-  const [role, setRole] = useState<AppRole | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading } = useQuery({
+    queryKey: ["auth-session"],
+    staleTime: 10 * 60_000,
+    queryFn: async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      const user = userData.user ?? null;
+      if (!user) return { user: null, role: null as AppRole | null };
+      const { data: roles } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id);
+      const list = (roles ?? []).map((r) => r.role as AppRole);
+      const role: AppRole = list.includes("super_admin")
+        ? "super_admin"
+        : list.includes("admin")
+          ? "admin"
+          : "staff";
+      return { user, role };
+    },
+  });
 
-  useEffect(() => {
-    let active = true;
-    supabase.auth.getUser().then(async ({ data }) => {
-      if (!active) return;
-      setUser(data.user ?? null);
-      if (data.user) {
-        const { data: roles } = await supabase
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", data.user.id);
-        const list = (roles ?? []).map((r) => r.role as AppRole);
-        setRole(
-          list.includes("super_admin") ? "super_admin" : list.includes("admin") ? "admin" : "staff",
-        );
-      }
-      setLoading(false);
-    });
-    return () => {
-      active = false;
-    };
-  }, []);
-
-  const isAdmin = role === "admin" || role === "super_admin";
-  return { user, role, isAdmin, loading };
+  const role = data?.role ?? null;
+  return {
+    user: data?.user ?? null,
+    role,
+    isAdmin: role === "admin" || role === "super_admin",
+    loading: isLoading,
+  };
 }
