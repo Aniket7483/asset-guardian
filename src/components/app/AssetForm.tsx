@@ -90,7 +90,38 @@ export function AssetForm({
   const rooms = useRooms();
   const employees = useEmployees();
   const { create, update } = useCrud("assets");
+  const categoryCrud = useCrud("categories");
   const { scope } = useLocationScope();
+  const [newCategory, setNewCategory] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [creatingCategory, setCreatingCategory] = useState(false);
+
+  const createCategory = async () => {
+    const name = newCategoryName.trim();
+    if (!name) return;
+    const existing = (categories.data ?? []).find(
+      (c) => c.name.toLowerCase() === name.toLowerCase(),
+    );
+    if (existing) {
+      set("category_id", existing.id);
+      setNewCategory(false);
+      setNewCategoryName("");
+      toast.info("That category already exists — selected it for you");
+      return;
+    }
+    setCreatingCategory(true);
+    try {
+      const created = (await categoryCrud.create.mutateAsync({ name })) as { id: string };
+      set("category_id", created.id);
+      setNewCategory(false);
+      setNewCategoryName("");
+      toast.success(`Category "${name}" created`);
+    } catch (err) {
+      toast.error((err as Error).message);
+    } finally {
+      setCreatingCategory(false);
+    }
+  };
 
   useEffect(() => {
     if (!open) return;
