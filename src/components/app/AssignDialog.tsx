@@ -134,9 +134,14 @@ export function AssignDialog({
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const target = asset ?? (assets.data ?? []).find((a) => a.id === assetId);
     if (!target) { toast.error("Select an asset"); return; }
     if (!employeeId) { toast.error("Select an employee"); return; }
+    const amount = Math.floor(Number(qty) || 0);
+    if (amount < 1) { toast.error("Enter a quantity of at least 1"); return; }
+    if (amount > available) {
+      toast.error(`Only ${available} of ${total} available to assign`);
+      return;
+    }
     setSaving(true);
     try {
       const emp = (employees.data ?? []).find((x) => x.id === employeeId);
@@ -144,12 +149,15 @@ export function AssignDialog({
         asset: target,
         employeeId,
         date,
+        quantity: amount,
         expectedReturn: expected,
         notes,
         ...(emp?.name ? { employeeName: emp.name } : {}),
       });
       refresh();
-      toast.success(`${target.asset_code} assigned to ${emp?.name}`);
+      toast.success(
+        `${amount} × ${target.asset_code} assigned to ${emp?.name} · ${available - amount} left available`,
+      );
       onOpenChange(false);
     } catch (err) {
       toast.error((err as { message?: string }).message ?? "Assignment failed");
