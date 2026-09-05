@@ -208,14 +208,43 @@ export function AssetForm({
                 <Input value={form.name} onChange={(e) => set("name", e.target.value)} required />
               </Field>
               <Field label="Category">
-                <NativeSelect value={form.category_id} onChange={(v) => set("category_id", v)}>
+                <NativeSelect
+                  value={newCategory ? NEW_CATEGORY : form.category_id}
+                  onChange={(v) => {
+                    if (v === NEW_CATEGORY) {
+                      setNewCategory(true);
+                      set("category_id", "");
+                    } else {
+                      setNewCategory(false);
+                      set("category_id", v);
+                    }
+                  }}
+                >
                   <option value="">Select category</option>
                   {(categories.data ?? []).map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name}
                     </option>
                   ))}
+                  <option value={NEW_CATEGORY}>+ Create new category…</option>
                 </NativeSelect>
+                {newCategory ? (
+                  <div className="mt-2 flex gap-2">
+                    <Input
+                      value={newCategoryName}
+                      onChange={(e) => setNewCategoryName(e.target.value)}
+                      placeholder="New category name"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={!newCategoryName.trim() || creatingCategory}
+                      onClick={createCategory}
+                    >
+                      {creatingCategory ? "Adding…" : "Add"}
+                    </Button>
+                  </div>
+                ) : null}
               </Field>
               <Field label="Asset type">
                 <Input value={form.asset_type} onChange={(e) => set("asset_type", e.target.value)} />
