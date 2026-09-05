@@ -247,6 +247,7 @@ export type Database = {
           expected_return_date: string | null
           id: string
           notes: string | null
+          quantity: number
           returned_date: string | null
         }
         Insert: {
@@ -257,6 +258,7 @@ export type Database = {
           expected_return_date?: string | null
           id?: string
           notes?: string | null
+          quantity?: number
           returned_date?: string | null
         }
         Update: {
@@ -267,6 +269,7 @@ export type Database = {
           expected_return_date?: string | null
           id?: string
           notes?: string | null
+          quantity?: number
           returned_date?: string | null
         }
         Relationships: [
