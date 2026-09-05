@@ -105,12 +105,14 @@ export function AssignDialog({
 }) {
   const employees = useEmployees();
   const assets = useAssets();
+  const assignments = useAssignments();
   const refresh = useRefresh();
   const [assetId, setAssetId] = useState("");
   const [employeeId, setEmployeeId] = useState("");
   const [date, setDate] = useState(todayISO());
   const [expected, setExpected] = useState("");
   const [notes, setNotes] = useState("");
+  const [qty, setQty] = useState("1");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -120,8 +122,14 @@ export function AssignDialog({
       setDate(todayISO());
       setExpected("");
       setNotes("");
+      setQty("1");
     }
   }, [open, asset]);
+
+  const assignedMap = assignedQtyMap(assignments.data);
+  const target = asset ?? (assets.data ?? []).find((a) => a.id === assetId) ?? null;
+  const total = target ? target.quantity ?? 1 : 0;
+  const available = target ? availableQty(target, assignedMap) : 0;
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
